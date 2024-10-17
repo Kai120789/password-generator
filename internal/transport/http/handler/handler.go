@@ -3,9 +3,9 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
-	"password_generator/internal/dto"
-	"password_generator/internal/models"
-	"password_generator/internal/utils/token"
+	"passwordgenerator/internal/dto"
+	"passwordgenerator/internal/models"
+	"passwordgenerator/internal/utils/token"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -72,19 +72,16 @@ func (h *Handler) RegisterNewUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GenNewPassword(w http.ResponseWriter, r *http.Request) {
-	// Извлекаем JWT-токен из cookie
 	cookie, err := r.Cookie("token")
 	if err != nil {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
-	// Декодируем токен
 	tokenString := cookie.Value
 	claims := &jwt.MapClaims{}
 
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
-		// Здесь вы должны вернуть ключ для верификации токена
 		return []byte("default"), nil
 	})
 
@@ -93,7 +90,6 @@ func (h *Handler) GenNewPassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Получаем username из claims
 	username, ok := (*claims)["username"].(string)
 	if !ok {
 		http.Error(w, "Invalid token", http.StatusUnauthorized)

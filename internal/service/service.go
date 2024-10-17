@@ -1,9 +1,9 @@
 package service
 
 import (
-	"password_generator/internal/dto"
-	"password_generator/internal/models"
-	"password_generator/internal/utils/genpass"
+	"passwordgenerator/internal/dto"
+	"passwordgenerator/internal/models"
+	"passwordgenerator/internal/utils/genpass"
 )
 
 type Service struct {

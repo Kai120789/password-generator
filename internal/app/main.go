@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"password_generator/internal/service"
-	"password_generator/internal/storage"
-	"password_generator/internal/transport/http/handler"
-	"password_generator/internal/transport/http/router"
-	"password_generator/pkg/logger"
+	"passwordgenerator/internal/service"
+	"passwordgenerator/internal/storage"
+	"passwordgenerator/internal/transport/http/handler"
+	"passwordgenerator/internal/transport/http/router"
+	"passwordgenerator/pkg/logger"
 
 	"go.uber.org/zap"
 )

@@ -1,6 +1,6 @@
 package main
 
-import "password_generator/internal/app"
+import "passwordgenerator/internal/app"
 
 func main() {
 	app.StartApp()

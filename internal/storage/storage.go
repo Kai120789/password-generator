@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"password_generator/internal/dto"
-	"password_generator/internal/models"
+	"passwordgenerator/internal/dto"
+	"passwordgenerator/internal/models"
 	"time"
 
 	"go.uber.org/zap"

@@ -2,8 +2,8 @@ package router
 
 import (
 	"net/http"
-	"password_generator/internal/middleware"
-	"password_generator/internal/transport/http/handler"
+	"passwordgenerator/internal/middleware"
+	"passwordgenerator/internal/transport/http/handler"
 
 	"github.com/go-chi/chi/v5"
 )
