@@ -89,5 +89,15 @@ func (h *Handler) GetAllPasswords(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) DeleteUserPassword(w http.ResponseWriter, r *http.Request) {
+	username := chi.URLParam(r, "username")
+	password := chi.URLParam(r, "password")
 
+	err := h.service.DeleteUserPassword(username, password)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusNoContent)
 }

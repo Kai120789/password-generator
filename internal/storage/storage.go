@@ -63,12 +63,6 @@ func (s *Storage) RegisterNewUser(body dto.User) (*models.User, error) {
 		CreatedAt: today,
 	}
 
-	for i := 0; i < len(users); i += 1 {
-		if user.Username == users[i].Username {
-			return nil, nil
-		}
-	}
-
 	users = append(users, user)
 
 	data, err := json.Marshal(users)
@@ -108,6 +102,34 @@ func (s *Storage) GetAllPasswords(username string) (*[]models.User, error) {
 	return &retUsers, err
 }
 
-func (s *Storage) DeleteUserPassword() {
+func (s *Storage) DeleteUserPassword(username string, password string) error {
+	users, err := s.readUsers()
+	if err != nil {
+		fmt.Println(err.Error())
+		return err
+	}
 
+	var retUsers []models.User
+
+	for i := 0; i < len(users); i += 1 {
+		if users[i].Username == username && users[i].Password == password {
+			continue
+		}
+
+		retUsers = append(retUsers, users[i])
+	}
+
+	data, err := json.Marshal(retUsers)
+	if err != nil {
+		zap.S().Error("error marshalling DTO", zap.Error(err))
+		return err
+	}
+
+	err = os.WriteFile(s.filePath, data, os.ModePerm)
+	if err != nil {
+		fmt.Println(err.Error())
+		return err
+	}
+
+	return nil
 }

@@ -3,7 +3,6 @@ package service
 import (
 	"password_generator/internal/dto"
 	"password_generator/internal/models"
-	hash "password_generator/internal/utils/passhash"
 )
 
 type Service struct {
@@ -14,7 +13,7 @@ type Storager interface {
 	RegisterNewUser(body dto.User) (*models.User, error)
 	GenNewPassword()
 	GetAllPasswords(username string) (*[]models.User, error)
-	DeleteUserPassword()
+	DeleteUserPassword(username string, password string) error
 }
 
 func New(s Storager) *Service {
@@ -24,13 +23,6 @@ func New(s Storager) *Service {
 }
 
 func (s *Service) RegisterNewUser(body dto.User) (*models.User, error) {
-	passwordHash, err := hash.HashPassword(body.Password)
-	if err != nil {
-		return nil, err
-	}
-
-	body.Password = passwordHash
-
 	user, err := s.storage.RegisterNewUser(body)
 	if err != nil {
 		return nil, err
@@ -53,5 +45,10 @@ func (s *Service) GetAllPasswords(username string) (*[]models.User, error) {
 }
 
 func (s *Service) DeleteUserPassword(username string, password string) error {
+	err := s.storage.DeleteUserPassword(username, password)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
