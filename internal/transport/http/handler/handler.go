@@ -8,6 +8,7 @@ import (
 	"password_generator/internal/utils/token"
 	"time"
 
+	"github.com/go-chi/chi/v5"
 	"go.uber.org/zap"
 )
 
@@ -67,7 +68,6 @@ func (h *Handler) RegisterNewUser(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(token)
-	w.WriteHeader(http.StatusCreated)
 }
 
 func (h *Handler) GenNewPassword(w http.ResponseWriter, r *http.Request) {
@@ -75,7 +75,17 @@ func (h *Handler) GenNewPassword(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetAllPasswords(w http.ResponseWriter, r *http.Request) {
+	username := chi.URLParam(r, "username")
 
+	passwords, err := h.service.GetAllPasswords(username)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(passwords)
 }
 
 func (h *Handler) DeleteUserPassword(w http.ResponseWriter, r *http.Request) {

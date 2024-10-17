@@ -63,6 +63,12 @@ func (s *Storage) RegisterNewUser(body dto.User) (*models.User, error) {
 		CreatedAt: today,
 	}
 
+	for i := 0; i < len(users); i += 1 {
+		if user.Username == users[i].Username {
+			return nil, nil
+		}
+	}
+
 	users = append(users, user)
 
 	data, err := json.Marshal(users)
@@ -80,12 +86,26 @@ func (s *Storage) RegisterNewUser(body dto.User) (*models.User, error) {
 	return &user, nil
 }
 
-func (s *Storage) GenNewPAssword() {
+func (s *Storage) GenNewPassword() {
 
 }
 
-func (s *Storage) GetAllPasswords() {
+func (s *Storage) GetAllPasswords(username string) (*[]models.User, error) {
+	users, err := s.readUsers()
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil, err
+	}
 
+	var retUsers []models.User
+
+	for i := 0; i < len(users); i += 1 {
+		if users[i].Username == username {
+			retUsers = append(retUsers, users[i])
+		}
+	}
+
+	return &retUsers, err
 }
 
 func (s *Storage) DeleteUserPassword() {

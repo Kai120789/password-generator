@@ -12,8 +12,8 @@ type Service struct {
 
 type Storager interface {
 	RegisterNewUser(body dto.User) (*models.User, error)
-	GenNewPAssword()
-	GetAllPasswords()
+	GenNewPassword()
+	GetAllPasswords(username string) (*[]models.User, error)
 	DeleteUserPassword()
 }
 
@@ -44,7 +44,12 @@ func (s *Service) GenNewPassword(body dto.User) (*models.User, error) {
 }
 
 func (s *Service) GetAllPasswords(username string) (*[]models.User, error) {
-	return nil, nil
+	passwords, err := s.storage.GetAllPasswords(username)
+	if err != nil {
+		return nil, err
+	}
+
+	return passwords, nil
 }
 
 func (s *Service) DeleteUserPassword(username string, password string) error {
