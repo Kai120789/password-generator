@@ -3,6 +3,7 @@ package service
 import (
 	"password_generator/internal/dto"
 	"password_generator/internal/models"
+	"password_generator/internal/utils/genpass"
 )
 
 type Service struct {
@@ -11,7 +12,6 @@ type Service struct {
 
 type Storager interface {
 	RegisterNewUser(body dto.User) (*models.User, error)
-	GenNewPassword()
 	GetAllPasswords(username string) (*[]models.User, error)
 	DeleteUserPassword(username string, password string) error
 }
@@ -31,8 +31,20 @@ func (s *Service) RegisterNewUser(body dto.User) (*models.User, error) {
 	return user, nil
 }
 
-func (s *Service) GenNewPassword(body dto.User) (*models.User, error) {
-	return nil, nil
+func (s *Service) GenNewPassword(username string) (*models.User, error) {
+	password := genpass.GeneratePassword()
+
+	dto := dto.User{
+		Username: username,
+		Password: password,
+	}
+
+	user, err := s.storage.RegisterNewUser(dto)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }
 
 func (s *Service) GetAllPasswords(username string) (*[]models.User, error) {

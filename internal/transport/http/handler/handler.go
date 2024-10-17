@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/golang-jwt/jwt"
 	"go.uber.org/zap"
 )
 
@@ -19,7 +20,7 @@ type Handler struct {
 
 type Handlerer interface {
 	RegisterNewUser(body dto.User) (*models.User, error)
-	GenNewPassword(body dto.User) (*models.User, error)
+	GenNewPassword(username string) (*models.User, error)
 	GetAllPasswords(username string) (*[]models.User, error)
 	DeleteUserPassword(username string, password string) error
 }
@@ -49,7 +50,7 @@ func (h *Handler) RegisterNewUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := token.GenerateJWT(us.ID, time.Now().Add(15*time.Minute))
+	token, err := token.GenerateJWT(us.ID, us.Username, time.Now().Add(15*time.Minute))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -71,7 +72,41 @@ func (h *Handler) RegisterNewUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GenNewPassword(w http.ResponseWriter, r *http.Request) {
+	// Извлекаем JWT-токен из cookie
+	cookie, err := r.Cookie("token")
+	if err != nil {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 
+	// Декодируем токен
+	tokenString := cookie.Value
+	claims := &jwt.MapClaims{}
+
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+		// Здесь вы должны вернуть ключ для верификации токена
+		return []byte("default"), nil
+	})
+
+	if err != nil || !token.Valid {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	// Получаем username из claims
+	username, ok := (*claims)["username"].(string)
+	if !ok {
+		http.Error(w, "Invalid token", http.StatusUnauthorized)
+		return
+	}
+
+	user, err := h.service.GenNewPassword(username)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(user)
 }
 
 func (h *Handler) GetAllPasswords(w http.ResponseWriter, r *http.Request) {

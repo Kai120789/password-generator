@@ -80,10 +80,6 @@ func (s *Storage) RegisterNewUser(body dto.User) (*models.User, error) {
 	return &user, nil
 }
 
-func (s *Storage) GenNewPassword() {
-
-}
-
 func (s *Storage) GetAllPasswords(username string) (*[]models.User, error) {
 	users, err := s.readUsers()
 	if err != nil {
